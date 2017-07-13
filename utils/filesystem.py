@@ -83,21 +83,25 @@ def strip_file_of_path(path_to_file):
     """
     Strip the file (last part) off of the absolute path.
     :param path_to_file: absolute path to a file e.g /home/cyril/test.png
-    :return absolute path without file e.g. /home/cyril/
+    :return absolute path and file separatly e.g. /home/cyril/,  test.png
     """
-    return path_to_file[:-len(os.path.basename(path_to_file))]
+    filename = os.path.basename(path_to_file)
+    return path_to_file[:-len(filename)], filename
 
 
 def convert_xls_to_xlsx(path_to_xls):
     from time import time as ti
-    print("converting {} to xlsx format...".format(path_to_xls))
+    abs_path, filename = strip_file_of_path(path_to_xls)
+    print("Converting {} to xlsx format...".format(filename), end="")
     t0 = ti()
+    pwd = os.getcwd()
+    os.chdir(abs_path)
     os.system("libreoffice --convert-to xlsx "+path_to_xls+" --headless")
+    os.chdir(pwd)
     t1 = ti()
-    print("done in {} sec.".format(round(t1-t0, 2)))
+    print("Done ({} sec.)".format(round(t1-t0, 2)))
     xlsx_exist = os.path.exists(path_to_xls[:-3]+"xlsx")
-    print(xlsx_exist)
-    # assert xlsx_exist, "conversion of file {} failed".format(path_to_xls)
+    assert xlsx_exist, "Conversion of file {} failed".format(path_to_xls)
 
 
 def convert_all_xls_to_xlsx(path=None):
