@@ -124,3 +124,30 @@ def convert_all_xls_to_xlsx(path=None, **kwargs):
     for xls in list_xls(path):
         convert_xls_to_xlsx(basepath+"/"+xls, **kwargs)
     pass
+
+def datapath():
+    """
+    Info about default datapath
+    :return string of default datapath
+    """
+    return DATAPATH
+
+
+def all_excels():
+    """
+    List all xlsx files ready for read in directories below 'datapath'
+    :return list of all xlsx files in directorytree relative to 'datapath'
+    """
+    pass
+
+
+def find_by_regex(regex, from_list=None, real_regex=False):
+    """
+    Make a new list of files that match a regex of an original list of files.
+    :param regex: the regex or part of the filename to look for
+    :param from_list: original list of files, default is all excels below
+    datapath base directory.
+    :param real_regex: If param 'regex' is a real regular expression or just
+    a part of the filename. Default is False, i.e. just a substring.
+    """
+    pass
