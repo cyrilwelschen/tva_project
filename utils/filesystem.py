@@ -89,32 +89,38 @@ def strip_file_of_path(path_to_file):
     return path_to_file[:-len(filename)], filename
 
 
-def convert_xls_to_xlsx(path_to_xls):
+def convert_xls_to_xlsx(path_to_xls, overwrite=False):
     """
     Converts an xls file to a xlsx file using liberaoffice and places its
     in same directory as original one. Original one not deleted.
     :param path_to_xls: absolute path to xls filename
+    :param overwrite: if True converts file again. Default: converts only if
+    no matching .xlsx file in same folder found.
     """
-    from time import time as ti
     abs_path, filename = strip_file_of_path(path_to_xls)
-    print("Converting {} to xlsx format...".format(filename), end="")
-    t0 = ti()
-    pwd = os.getcwd()
-    os.chdir(abs_path)
-    os.system("libreoffice --convert-to xlsx "+path_to_xls+" --headless")
-    os.chdir(pwd)
-    t1 = ti()
-    print("Done ({} sec.)".format(round(t1-t0, 2)))
-    xlsx_exist = os.path.exists(path_to_xls[:-3]+"xlsx")
-    assert xlsx_exist, "Conversion of file {} failed".format(path_to_xls)
+    files = list_xlsx(abs_path)
+    if (not overwrite) and (filename[:-3]+"xlsx" in files):
+        print("File {} already converted. Pass!".format(filename))
+    else:
+        from time import time as ti
+        print("Converting {} to xlsx format...".format(filename), end="")
+        t0 = ti()
+        pwd = os.getcwd()
+        os.chdir(abs_path)
+        os.system("libreoffice --convert-to xlsx "+path_to_xls+" --headless")
+        os.chdir(pwd)
+        t1 = ti()
+        print("Done ({} sec.)".format(round(t1-t0, 2)))
+        xlsx_exist = os.path.exists(path_to_xls[:-3]+"xlsx")
+        assert xlsx_exist, "Conversion of file {} failed".format(path_to_xls)
 
 
-def convert_all_xls_to_xlsx(path=None):
+def convert_all_xls_to_xlsx(path=None, **kwargs):
     """
     converts all xls files in a directory to xlsx files
     :param path: abs or rel path or none.
     """
     basepath = analysed_path(path)
     for xls in list_xls(path):
-        convert_xls_to_xlsx(basepath+"/"+xls)
+        convert_xls_to_xlsx(basepath+"/"+xls, **kwargs)
     pass
