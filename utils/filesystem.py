@@ -90,6 +90,11 @@ def strip_file_of_path(path_to_file):
 
 
 def convert_xls_to_xlsx(path_to_xls):
+    """
+    Converts an xls file to a xlsx file using liberaoffice and places its
+    in same directory as original one. Original one not deleted.
+    :param path_to_xls: absolute path to xls filename
+    """
     from time import time as ti
     abs_path, filename = strip_file_of_path(path_to_xls)
     print("Converting {} to xlsx format...".format(filename), end="")
@@ -112,8 +117,4 @@ def convert_all_xls_to_xlsx(path=None):
     basepath = analysed_path(path)
     for xls in list_xls(path):
         convert_xls_to_xlsx(basepath+"/"+xls)
-    pass
-
-
-def excels_by_regex(path):
     pass
