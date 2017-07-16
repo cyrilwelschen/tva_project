@@ -42,10 +42,16 @@ def get_sheetnames(workbook):
 
 
 def default_ws_names():
+    """
+    #TODO: add description
+    """
     return ["ReZ-ReZType", "All_Data_ReZ"]
 
 
 def find_important_ws(filename, overwrite_ws_name=None):
+    """
+    #todo: duplicate from below, rewrite the below
+    """
     wb = load_wb(filename)
     name_proposal = overwrite_ws_name or default_ws_names()
     wb_sheet_names = get_sheetnames(wb)
@@ -94,6 +100,7 @@ def try_find_column_names(filename, overwrite_ws_name=None):
         return [c.value for c in ws[1]]
 
 
+# todo: slim list vs string
 def find_columns_by_regex(filename, regex):
     """
     Find available column names from pattern.
@@ -122,6 +129,9 @@ def find_columns_by_regex(filename, regex):
 
 
 def values_of(filename, columnname, nr=20):
+    """
+    #todo: Slim up
+    """
     try:
         found = find_columns_by_regex(filename, columnname)
     except:
@@ -135,7 +145,7 @@ def values_of(filename, columnname, nr=20):
             letter = found[0][0]
             values = []
             import numpy as np
-            for r in np.arange(1,20):
+            for r in np.arange(1, 20):
                 cell_name = letter+str(r)
                 values.append(ws[cell_name].value)
             return values
@@ -144,7 +154,7 @@ def values_of(filename, columnname, nr=20):
             values = []
             print("max rows", ws.max_row)
             import numpy as np
-            for r in np.arange(1,20):
+            for r in np.arange(1, 20):
                 cell_name = letter+str(r)
                 values.append(ws[cell_name].value)
             return values
