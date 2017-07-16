@@ -138,7 +138,8 @@ def all_excels(filetype='xlsx'):
     """
     List all xlsx files ready for read in directories below 'datapath'
     :param filetype: Default xlsx. Other options: 'xls' or 'both'
-    :return list of all xlsx files in directorytree relative to 'datapath'
+    :return list of absolute path of all xlsx files in directorytree
+    relative to 'datapath'
     """
     all_dirs = [x[0] for x in os.walk(DATAPATH)]
     list_of_all = []
@@ -150,7 +151,7 @@ def all_excels(filetype='xlsx'):
         else:
             in_dir_list = list_all_excels(dir)
         for f in in_dir_list:
-            list_of_all.append(f)
+            list_of_all.append(dir+"/"+f)
     return list_of_all
 
 
