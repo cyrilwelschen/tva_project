@@ -125,6 +125,7 @@ def convert_all_xls_to_xlsx(path=None, **kwargs):
         convert_xls_to_xlsx(basepath+"/"+xls, **kwargs)
     pass
 
+
 def datapath():
     """
     Info about default datapath
@@ -133,21 +134,51 @@ def datapath():
     return DATAPATH
 
 
-def all_excels():
+def all_excels(filetype='xlsx'):
     """
     List all xlsx files ready for read in directories below 'datapath'
+    :param filetype: Default xlsx. Other options: 'xls' or 'both'
     :return list of all xlsx files in directorytree relative to 'datapath'
     """
-    pass
+    all_dirs = [x[0] for x in os.walk(DATAPATH)]
+    list_of_all = []
+    for dir in all_dirs:
+        if filetype == 'xlsx':
+            in_dir_list = list_xlsx(dir)
+        elif filetype == 'xls':
+            in_dir_list = list_xls(dir)
+        else:
+            in_dir_list = list_all_excels(dir)
+        for f in in_dir_list:
+            list_of_all.append(f)
+    return list_of_all
 
 
-def find_by_regex(regex, from_list=None, real_regex=False):
+def find_by_regex(regex, from_list=None, real_regex=False, filetype='xlsx'):
     """
     Make a new list of files that match a regex of an original list of files.
-    :param regex: the regex or part of the filename to look for
+    :param regex: the regex or part of the filename to look for, also list of
+    filename parts is possible.
     :param from_list: original list of files, default is all excels below
     datapath base directory.
     :param real_regex: If param 'regex' is a real regular expression or just
     a part of the filename. Default is False, i.e. just a substring.
+    :param filetype: Default xlsx. Other options: 'xls' or 'both'
+    :return list of paths to files that match regex.
     """
-    pass
+    all = from_list or all_excels(filetype)
+    found_reg = []
+    for f in all:
+        if isinstance(regex, str):
+            if regex in f:
+                found_reg.append(f)
+        elif isinstance(regex, list):
+            found = True
+            for r in regex:
+                if r not in f:
+                    found = False
+            if found:
+                found_reg.append(f)
+        else:
+            print("Unsupported 'regex' parameter type")
+    return found_reg
