@@ -134,27 +134,28 @@ def values_of(filename, columnname, nr=20):
     """
     try:
         found = find_columns_by_regex(filename, columnname)
-    except:
-        print("Couldn't find columnname")
-        raise
+    except LookupError as err:
+        print("Failed to find columnname", err)
+    ws = find_important_ws(filename)
+    if len(found) != 1:
+        if found == []:
+            raise ValueError("Coudn't find column with name {} in file {}"
+                                .format(columnname, filename))
+        print("Found more than one: {}\n\nTaking {}".format(found,
+                                                            found[0][1]))
+        letter = found[0][0]
+        values = []
+        import numpy as np
+        for r in np.arange(1, 20):
+            cell_name = letter+str(r)
+            values.append(ws[cell_name].value)
+        return values
     else:
-        ws = find_important_ws(filename)
-        if len(found) != 1:
-            print("Found more than one: {}\n\nTaking {}".format(found,
-                                                                found[0][1]))
-            letter = found[0][0]
-            values = []
-            import numpy as np
-            for r in np.arange(1, 20):
-                cell_name = letter+str(r)
-                values.append(ws[cell_name].value)
-            return values
-        else:
-            letter = found[0][0]
-            values = []
-            print("max rows", ws.max_row)
-            import numpy as np
-            for r in np.arange(1, 20):
-                cell_name = letter+str(r)
-                values.append(ws[cell_name].value)
-            return values
+        letter = found[0][0]
+        values = []
+        print("max rows", ws.max_row)
+        import numpy as np
+        for r in np.arange(1, 20):
+            cell_name = letter+str(r)
+            values.append(ws[cell_name].value)
+        return values
