@@ -1,7 +1,7 @@
 '__author__' == 'cyril'
 
 
-from tva_prject.factors.factor import Factor
+from tva_project.factors.factor import Factor
 
 
 class Technology(object):
