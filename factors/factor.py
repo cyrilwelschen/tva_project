@@ -1,9 +1,9 @@
 '__author__' == 'cyril'
 
 
-class Datastruct(object):
+class Factor(object):
     """
-    Class model data (value or cost)
+    Class describing factors (value or cost)
     """
 
     def __init__(self, value, error=None, args=None, kwargs=None):
