@@ -45,7 +45,7 @@ def default_ws_names():
     """
     #TODO: add description
     """
-    return ["ReZ-ReZType", "All_Data_ReZ"]
+    return ["Rez-RezType", "ReZ-ReZType", "All_Data_ReZ"]
 
 
 def find_important_ws(filename, overwrite_ws_name=None):
@@ -93,7 +93,7 @@ def try_find_column_names(filename, overwrite_ws_name=None):
                 name = name_prop
     try:
         ws = wb[name]
-    except NameError:
+    except KeyError:
         print("Couldn't find worksheet {}. Found {}".format(name,
                                                             get_sheetnames(wb)))
     else:
@@ -130,6 +130,13 @@ def find_columns_by_regex(filename, regex):
 
 def values_of(filename, columnname, nr=20):
     """
+    Dummy function for backwards compatibility
+    """
+    return values_of_columns(filename, columnname, nr=20)
+
+
+def values_of_columns(filename, columnname, nr=20):
+    """
     #todo: Slim up
     """
     try:
@@ -143,19 +150,15 @@ def values_of(filename, columnname, nr=20):
                                 .format(columnname, filename))
         print("Found more than one: {}\n\nTaking {}".format(found,
                                                             found[0][1]))
-        letter = found[0][0]
-        values = []
-        import numpy as np
-        for r in np.arange(1, 20):
-            cell_name = letter+str(r)
-            values.append(ws[cell_name].value)
-        return values
+        return get_column_values(found[0][0], ws, end=nr)
     else:
-        letter = found[0][0]
-        values = []
-        print("max rows", ws.max_row)
-        import numpy as np
-        for r in np.arange(1, 20):
-            cell_name = letter+str(r)
-            values.append(ws[cell_name].value)
-        return values
+        return get_column_values(found[0][0], ws, end=nr)
+
+
+def get_column_values(letter, ws, start=1, end=20):
+    values = []
+    import numpy as np
+    for r in np.arange(start, end):
+        cell_name = letter+str(r)
+        values.append(ws[cell_name].value)
+    return values

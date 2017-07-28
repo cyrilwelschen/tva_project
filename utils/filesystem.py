@@ -103,7 +103,7 @@ def convert_xls_to_xlsx(path_to_xls, overwrite=False):
         print("File {} already converted. Pass!".format(filename))
     else:
         from time import time as ti
-        print("Converting {} to xlsx format...".format(filename), end="")
+        print("Converting {} to csv format...".format(filename), end="")
         t0 = ti()
         pwd = os.getcwd()
         os.chdir(abs_path)
@@ -112,6 +112,32 @@ def convert_xls_to_xlsx(path_to_xls, overwrite=False):
         t1 = ti()
         print("Done ({} sec.)".format(round(t1-t0, 2)))
         xlsx_exist = os.path.exists(path_to_xls[:-3]+"xlsx")
+        assert xlsx_exist, "Conversion of file {} failed".format(path_to_xls)
+
+
+def convert_xlsx_to_csv(path_to_xls, overwrite=False):
+    """
+    Converts an xlsx file to a csv file using liberaoffice and places its
+    in same directory as original one. Original one not deleted.
+    :param path_to_xlsx: absolute path to xlsx filename
+    :param overwrite: if True converts file again. Default: converts only if
+    no matching .csv file in same folder found.
+    """
+    abs_path, filename = strip_file_of_path(path_to_xls)
+    files = list_filetype('csv', path=abs_path)
+    if (not overwrite) and (filename[:-2]+"csv" in files):
+        print("File {} already converted. Pass!".format(filename))
+    else:
+        from time import time as ti
+        print("Converting {} to csv format...".format(filename), end="")
+        t0 = ti()
+        pwd = os.getcwd()
+        os.chdir(abs_path)
+        os.system("libreoffice --convert-to csv "+path_to_xls+" --headless")
+        os.chdir(pwd)
+        t1 = ti()
+        print("Done ({} sec.)".format(round(t1-t0, 2)))
+        xlsx_exist = os.path.exists(path_to_xls[:-4]+"csv")
         assert xlsx_exist, "Conversion of file {} failed".format(path_to_xls)
 
 
