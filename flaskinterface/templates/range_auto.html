@@ -1,0 +1,17 @@
+<script>
+function submitForm(){
+  document.getElementById('form_id').submit();
+}
+</script>
+
+<form id="form_id" action="{{ url_for('value_brain') }}" method="post">
+  <p>
+  <label><b>{{ slider_dic['name'] }}</b></label>
+  <input id="in_val_form" type="text" value="{{ slider_dic['value'] }}" name="in_val_form" onchange="submitForm()">
+  </p>
+  <p>
+    {{ slider_dic['min'] }}
+    <input id="in_val_range" type="range" min="{{ slider_dic['min'] }}" max="{{ slider_dic['max'] }}" value="{{ slider_dic['value'] }}" step="{{ slider_dic['step'] }}" name="in_val_range" onchange="submitForm()">
+    {{ slider_dic['max'] }}
+  </p>
+</form>

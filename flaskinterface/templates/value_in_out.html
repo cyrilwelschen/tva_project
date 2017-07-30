@@ -1,0 +1,16 @@
+<script>
+function submitForm(){
+  document.getElementById('form_id').submit();
+}
+</script>
+
+<form id="form_id" action="{{ url_for('in_out_func') }}" method="post">
+    <label><b>Input Value</b></label>
+    {% if val %}
+    <input id="in_val" type="range" min="10" max="20" value="{{ val }}" name="input_value" onchange="submitForm()">
+    <p> Value: {{ val }}</p>
+    {% else %}
+    <input id="in_val" type="range" min="10" max="20" value="15" name="input_value" onchange="submitForm()">
+    <p> 15 </p>
+    {% endif %}
+</form>
