@@ -60,7 +60,7 @@ def generate_test_factors():
 
 def default_slider():
     sd = {'name': 'dummy factor', 'min': 0, 'max': 100,
-          'value': 50, 'step': 1}
+          'value': 50, 'step': 10}
     return sd
 
 
@@ -90,14 +90,20 @@ def dummy_db_get():
     return dic
 
 
+def delete():
+    pass
+
+
 @app.route('/sliders', methods=['POST', 'GET'])
 def value_brain():
     if request.method == 'POST':
+        print(request.form)
         print(request.form['in_val_range'])
         print(request.form['in_val_form'])
         slider_dic = dummy_db_put(request.form['in_val_form'],
                                   request.form['in_val_range'])
-        return render_template('range_auto.html', slider_dic=slider_dic)
+        print("NEW:  ", slider_dic['value'])
+        return render_template('range_auto_test.html', slider_dic=slider_dic)
     else:
         slider_dic = initial_put()
-        return render_template('range_auto.html', slider_dic=slider_dic)
+        return render_template('range_auto_test.html', slider_dic=slider_dic)
