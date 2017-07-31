@@ -51,7 +51,7 @@ def get_col_info(csv_file):
         for row in reader:
             i += 1
             if i == 1:
-                col_names = [r.replace(' ', '') for r in row]
+                col_names = [r.replace(' ', '').replace('(', '').replace(')', '').replace('+', 'line').replace('/', '') for r in row]
                 col_num = len(row)
             elif i == 2:
                 for r in row:
