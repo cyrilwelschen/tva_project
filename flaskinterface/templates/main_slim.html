@@ -1,0 +1,20 @@
+<script>
+function submitForm(){
+  document.getElementById('form_id').submit();
+}
+
+</script>
+
+<form id="form_id" action="{{ url_for('value_brain') }}" method="post">
+{% for slider_dic in sliders %}
+  <p>
+  <label><b>{{ slider_dic['name'] }}</b></label>
+  <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)">
+  </p>
+  <p>
+    {{ slider_dic['min'] }}
+    <input type="range" min="{{ slider_dic['min'] }}" max="{{ slider_dic['max'] }}" value="{{ slider_dic['value'] }}" step="{{ slider_dic['step'] }}" name="{{ slider_dic['name']+'r' }}" onchange="submitForm(this.name)">
+    {{ slider_dic['max'] }}
+  </p>
+{% endfor %}
+</form>
