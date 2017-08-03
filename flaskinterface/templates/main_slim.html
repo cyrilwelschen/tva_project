@@ -1,3 +1,7 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
 <script>
 function submitForm(){
   document.getElementById('form_id').submit();
@@ -5,16 +9,27 @@ function submitForm(){
 
 </script>
 
+<div class="row">
+  <div class="col-md-6">
 <form id="form_id" action="{{ url_for('value_brain') }}" method="post">
 {% for slider_dic in sliders %}
-  <p>
+  <div class="col-md-3 col-sm-3">
   <label><b>{{ slider_dic['name'] }}</b></label>
-  <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)">
-  </p>
+</div>
+  <div class="col-md-3 col-sm-3">
+  <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)" size="8">
+</div>
+  <!--
   <p>
     {{ slider_dic['min'] }}
     <input type="range" min="{{ slider_dic['min'] }}" max="{{ slider_dic['max'] }}" value="{{ slider_dic['value'] }}" step="{{ slider_dic['step'] }}" name="{{ slider_dic['name']+'r' }}" onchange="submitForm(this.name)">
     {{ slider_dic['max'] }}
   </p>
+  -->
 {% endfor %}
 </form>
+</div>
+  <div class="col-md-6">
+    <p> Hello </p>
+</div>
+</div>
