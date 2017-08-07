@@ -6,30 +6,45 @@
 function submitForm(){
   document.getElementById('form_id').submit();
 }
-
 </script>
 
-<div class="row">
-  <div class="col-md-6">
-<form id="form_id" action="{{ url_for('value_brain') }}" method="post">
-{% for slider_dic in sliders %}
-  <div class="col-md-3 col-sm-3">
-  <label><b>{{ slider_dic['name'] }}</b></label>
-</div>
-  <div class="col-md-3 col-sm-3">
-  <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)" size="8">
-</div>
-  <!--
-  <p>
-    {{ slider_dic['min'] }}
-    <input type="range" min="{{ slider_dic['min'] }}" max="{{ slider_dic['max'] }}" value="{{ slider_dic['value'] }}" step="{{ slider_dic['step'] }}" name="{{ slider_dic['name']+'r' }}" onchange="submitForm(this.name)">
-    {{ slider_dic['max'] }}
-  </p>
-  -->
-{% endfor %}
-</form>
-</div>
-  <div class="col-md-6">
-    <p> Hello </p>
-</div>
-</div>
+<div class="container-fluid">
+  <form id="form_id" action="{{ url_for('value_brain') }}" method="post">
+    <input type="text" value="{{ sliders['rez'] }}" name="rez" onchange="submitForm(this.name)" size="8">
+    <div class="row">
+      <div class="col-md-6">
+        {% for c in sliders['cats']%}
+        {% if c != 'plot' %}
+        <h2> {{ c }} </h2>
+        {% for slider_dic in sliders['factors'] %}
+        {% if slider_dic['cat'].split()[0] == c %}
+        <div class="col-md-6 col-sm-3">
+          <label title="{% if slider_dic['desc'] %}{{ slider_dic['desc'] }}{% endif %}"><b>{{ slider_dic['name'] }}</b></label>
+        </div>
+        <div class="col-md-6 col-sm-3">
+          <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)" size="8">
+        </div>
+        {% endif %}
+        {% endfor %}
+        <br>
+        {% endif %}
+        {% endfor %}
+      </div><!-- /.col-6 -->
+      <div class="col-md-6">
+        <div class="panel affix">
+          <img src="{{ url_for('static', filename = 'plot.png') }}" alt="previous" border="0">
+          {% for slider_dic in sliders['factors'] %}
+          {% if slider_dic['cat'] == 'plot' %}
+          <div class="col-md-6 col-sm-3">
+            <label title="{% if slider_dic['desc'] %}{{ slider_dic['desc'] }}{% endif %}"><b>{{ slider_dic['name'] }}</b></label>
+          </div>
+          <div class="col-md-6 col-sm-3">
+            <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)" size="8">
+            <span> = {{ slider_dic['value']//12 }} Jahre {{ slider_dic['value']%12 }} Monate</span>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div><!-- /.col-6 -->
+    </div><!-- /.row -->
+  </form>
+</div><!-- /.container-fluid -->

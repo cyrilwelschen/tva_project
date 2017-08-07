@@ -3,6 +3,8 @@
 
 from flask import Flask, request, render_template
 import pickle
+from tva_project.models.model_helpers import *
+from tva_project.models.model import Model
 
 
 app = Flask(__name__)
@@ -17,21 +19,10 @@ def generate_test_factors():
     return slider_dics_list
 
 
-def default_slider():
-    default = load_defaults()
-    sd = {'name': 'dummy factor', 'min': 0, 'max': 100,
-          'value': 50, 'step': 10}
-    sd1 = {'name': 'dummy fac', 'min': 0, 'max': 200,
-           'value': 50, 'step': 10}
-    sd2 = {'name': 'dummy fac3', 'min': 0, 'max': 200,
-           'value': 150, 'step': 10}
-    return default + [sd, sd1, sd2]
-
-
 def initial_put():
     with open('dummy.txt', 'wb') as f:
-        pickle.dump(default_slider(), f)
-    return default_slider()
+        pickle.dump(load_defaults(), f)
+    return load_defaults()
 
 
 def dummy_db_put(req_form):
@@ -59,7 +50,10 @@ def dummy_db_put_single(req_form):
     new_dic = []
     for f in db_dic:
         f_name = f['name']
-        f['value'] = req_form[f_name+'f']
+        try:
+            f['value'] = float(eval(req_form[f_name+'f']))
+        except SyntaxError as err:
+            f['value'] = float(req_form[f_name+'f'])
         new_dic.append(f)
     with open('dummy.txt', 'wb') as f:
         pickle.dump(new_dic, f)
@@ -86,15 +80,63 @@ def value_brain():
         sliders = dummy_db_put(request.form)
         """
         sliders = dummy_db_put_single(request.form)
-        return render_template('main_slim.html', sliders=sliders)
+        Model(sliders).plot()
+        cats = ["Input", "FTTH", "FTTSB", "FTTB", "FTTS"]
+        print(request.form)
+        s_dic = {'factors': sliders, 'cats': cats, 'rez': request.form['rez']}
+        return render_template('main_slim.html',
+                               sliders=s_dic)
     else:
         sliders = initial_put()
-        return render_template('main_slim.html', sliders=sliders)
+        Model(sliders).plot()
+        cats = ["Input", "FTTH", "FTTSB", "FTTB", "FTTS"]
+        s_dic = {'factors': sliders, 'cats': cats, 'rez': 'REZ'}
+        return render_template('main_slim.html',
+                               sliders=s_dic)
 
 
 def load_defaults():
+    return list([{'name': 'max_horizon', 'cat': 'plot', 'value': 8*12},
+                 {'name': 'slider', 'cat': 'plot', 'value': 12},
+                 {'name': 'anzahl_ne', 'cat': 'Input', 'value': 10},
+                 # FTTH
+                 {'name': 'fan_wartung', 'cat': 'FTTH Betrieb', 'value': 521.7,
+                  'desc': "Wartungskosten pro Jahr anfallend für INI-ON"},
+                 {'name': 'fan_strom', 'cat': 'FTTH Betrieb', 'value': 1557.70},
+                 {'name': 'fan_proacM', 'cat': 'FTTH Betrieb', 'value': 344.45},
+                 {'name': 'fan_logistik', 'cat': 'FTTH Betrieb',
+                  'value': 22.02},
+                 {'name': 'fan_assurance', 'cat': 'FTTH Assurance',
+                  'value': 22.02},
+                 {'name': 'fan_eff_bel', 'cat': 'FTTH Betrieb', 'value': 300,
+                  'desc': "Auf wie viele NE können die FAN Kosten aufgeteilt\
+                           werden"},
+                 # FTTS/B
+                 {'name': 'mcan_wartung', 'cat': 'FTTSB', 'value': 25.47,
+                  'desc': "Anteil an Wartungsvertrag HUAWEI für mCANs\
+                           (proportional)"},
+                 {'name': 'mcan_proacM', 'cat': 'FTTSB', 'value': 22.36},
+                 {'name': 'mcan_logistik', 'cat': 'FTTSB', 'value': 4.63},
+                 {'name': 'mcan_assurance_fixed', 'cat': 'FTTSB',
+                  'value': 11.78,
+                  'desc': "Anteil an Assurance fixed (380'000)"},
+                 {'name': 'agg_strom', 'cat': 'FTTSB', 'value': 846.46},
+                 {'name': 'agg_eff_bel', 'cat': 'FTTSB', 'value': 300,
+                  'desc': "Auf wie viele NE können die Aggregator Stromkosten\
+                           aufgeteilt werden"},
+                 {'name': 'mcan_eff_bel', 'cat': 'FTTSB', 'value': 32},
+                 # FTTB
+                 {'name': 'mcan_assurance_fttb', 'cat': 'FTTB', 'value': 0.73},
+                 # FTTS
+                 {'name': 'mcan_assurance_ftts', 'cat': 'FTTS', 'value': 75.03},
+                 ])
+
+
+def load_defaults_old():
     return list([{'name': 'max_horizon', 'min': 12, 'max':  360,
                  'step': 4, 'value': 8*12},
+                {'name': 'h_ob_fan_wartung', 'min': 0, 'max':  300,
+                 'step': 1, 'value': 15},
                 {'name': 'anzahl_ne', 'min': 0, 'max':  300,
                  'step': 1, 'value': 15},
                 {'name': 'feeder_m', 'min': 0, 'max':  5000,
