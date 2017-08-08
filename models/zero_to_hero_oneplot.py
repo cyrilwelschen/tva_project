@@ -103,20 +103,12 @@ Model
 """
 
 
+def techs():
+    return ['h', 's', 'b', 'c']
+
+
 def fan(ne=1):
     return (h_ob_fan + h_as_fan) / eff_b_fan * ne
-
-
-def h_opex(ne=1):
-    return fan(ne) + ne * h_rla_ne
-
-
-def can(ne=1):
-    return (c_ob_can + c_as_can) / eff_b_can * ne
-
-
-def c_opex(ne=1):
-    return can(ne) + agg(ne)
 
 
 def mcan(ne=1, t='ftts'):
@@ -131,6 +123,14 @@ def agg(ne=1):
     return sb_ob_agg / eff_b_agg * ne
 
 
+def can(ne=1):
+    return (c_ob_can + c_as_can) / eff_b_can * ne
+
+
+def h_opex(ne=1):
+    return fan(ne) + ne * h_rla_ne
+
+
 def s_opex(ne=1):
     return mcan(ne, 'ftts') + agg(ne)
 
@@ -139,13 +139,8 @@ def b_opex(ne=1):
     return mcan(ne, 'fttb') + agg(ne)
 
 
-def techs():
-    return ['h', 's', 'b', 'c']
-
-
-"""
-Plot
-"""
+def c_opex(ne=1):
+    return can(ne) + agg(ne)
 
 
 def k2a(kosten, interval):
@@ -154,6 +149,11 @@ def k2a(kosten, interval):
 
 def m_nb2i_ne(t, ne=1):
     return m2t(eval('k2a('+t+'_opex({}), 12)'.format(ne)) / ne)
+
+
+"""
+Plot
+"""
 
 
 def rn(t):
@@ -167,7 +167,7 @@ def rn(t):
         return 'FTTC'
 
 
-class LineBuilder:
+class LineBuilderAx1:
     def __init__(self, line, ax):
         self.line = line
         self.ax = ax
@@ -203,12 +203,14 @@ def ax1_plot(ax1, sli, x):
     ax1.set_title(p_tit(sli.v()))
     ax1.legend()
     vl = ax1.axvline(sli.v())
-    LineBuilder(vl, ax1)
+    LineBuilderAx1(vl, ax1)
 
 
 def plot_master(sli):
     plt.close()
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 6))
+    fig, (ax12, ax34) = plt.subplots(2, 2, figsize=(6, 6))
+    ax1, ax2 = ax12
+    fig.suptitle("Hello")
     x = np.arange(horizon())
     ax1_plot(ax1, sli, x)
     plt.show()
