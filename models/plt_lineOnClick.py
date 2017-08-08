@@ -9,11 +9,6 @@ lin = ax.axvline(0.5)
 lin.set_xdata(3)
 
 
-def onclick(event):
-    print(event.name)
-    print("x-Axis value: ", event.xdata)
-
-
 class LineBuilder:
     def __init__(self, line):
         self.line = line

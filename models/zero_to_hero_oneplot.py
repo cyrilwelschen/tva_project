@@ -15,6 +15,19 @@ db_file = '/home/cyril/Desktop/slim_csv_2017-04-Alle_Daten.db'
 """
 Factors
 """
+
+
+class Slider(object):
+    def __init__(self, s=12*2):
+        self.s = s
+
+    def set_v(self, new):
+        self.s = new
+
+    def v(self):
+        return self.s
+
+
 rez = "asdf"
 nutzungseinheiten = 1
 hori = 12*20
@@ -32,6 +45,8 @@ s_as_mcan = 75.03  # mCan
 s_rla_mcan = 1300*0.05 + 200  # mCan
 s_ob_mcan = 138  # mCan Strom
 eff_b_mcan = 32
+
+data = {}
 
 
 def horizon():
@@ -92,13 +107,59 @@ def m_nb2i_ne(t, ne=1):
     return m2t(eval('k2a('+t+'_opex({}), 12)'.format(ne)) / ne)
 
 
-def plot():
+def to_data(name, val_array):
+    data[name] = val_array
+
+
+def rn(t):
+    if t == 'h':
+        return 'FTTH'
+    if t == 'b':
+        return 'FTTB'
+    if t == 's':
+        return 'FTTS'
+
+
+class LineBuilder:
+    def __init__(self, line, ax):
+        self.line = line
+        self.ax = ax
+        self.cid = line.figure.canvas.mpl_connect('button_press_event', self)
+
+    def __call__(self, event):
+        if event.inaxes != self.line.axes:
+            return
+        hans, lebs = self.ax.get_legend_handles_labels()
+        new_lebs = []
+        for h, l in zip(hans, lebs):
+            y_temp = h.get_ydata()
+            t_temp = l[3].lower()
+            new_lebs.append(p_label(rn(t_temp), y_temp[int(event.xdata)]))
+        self.ax.legend(hans, new_lebs)
+        self.ax.set_title(p_tit(event.xdata))
+        self.line.set_xdata(event.xdata)
+        self.line.figure.canvas.draw()
+
+
+def p_tit(mts):
+    return "OPEX nach {} yr {} mt".format(int(mts // 12), int(mts % 12))
+
+
+def p_label(n, chf):
+    return "{}: {} CHF".format(n, round(chf, 2))
+
+
+def plot(sli):
     plt.close()
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 6))
     x = np.arange(horizon())
     for t in techs():
         y = m_nb2i_ne(t, get_ne())
-        ax1.plot(x, y, label=t)
+        ax1.plot(x, y, label=p_label(rn(t),y[sli.v()]))
+    ax1.set_title(p_tit(sli.v()))
+    ax1.legend()
+    vl = ax1.axvline(sli.v())
+    LineBuilder(vl, ax1)
     plt.show()
     return 0
 
@@ -108,6 +169,4 @@ Main
 """
 if __name__ == '__main__':
     print(search_query(db_file, "SELECT Rez from RezTable WHERE ID < 6"))
-    for t in techs():
-        print("ftt{}".format(t), eval(t+'_opex()'))
-    plot()
+    plot(Slider())
