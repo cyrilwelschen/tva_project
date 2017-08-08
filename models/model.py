@@ -3,7 +3,7 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
-from tva_project.models.model_helpers import *
+from tva_project.models.model_helpers import make_array, monatsweise_zu_total
 
 
 class Model(object):
@@ -50,14 +50,14 @@ class Model(object):
     """
 
     def h_ob(s):
-        return make_array(12, s.max_horizon) * (s.fan_wartung + s.fan_strom\
-            + s.fan_proacM + s.fan_logistik + s.fan_assurance) / s.fan_eff_bel\
-            * s.anzahl_ne
+        return (s.fan_wartung + s.fan_strom
+                + s.fan_proacM + s.fan_logistik + s.fan_assurance)\
+                / s.fan_eff_bel * s.anzahl_ne * make_array(12, s.max_horizon)
 
     def mcan_ob(s):
-        return make_array(12, s.max_horizon) * (s.mcan_wartung + s.mcan_proacM\
-            + s.mcan_logistik + s.mcan_assurance_fixed) / s.mcan_eff_bel\
-            * s.anzahl_ne
+        return (s.mcan_wartung + s.mcan_proacM
+                + s.mcan_logistik + s.mcan_assurance_fixed) / s.mcan_eff_bel\
+                * s.anzahl_ne * make_array(12, s.max_horizon)
 
     def mcan_ass(s, t):
         if t == 'b':
@@ -77,11 +77,16 @@ class Model(object):
     Plot
     """
 
+# TODO: do factor class :-(
+    def update_dependend_facs(s):
+        if s.max_horizon < s.slider:
+            s.slider = s.max_horizon
+
     def sum_mw(s):
         h_mw = s.h_ob()
         b_mw = s.mcan_ob() + s.agg_ob() + s.mcan_ass('b')
         s_mw = s.mcan_ob() + s.agg_ob() + s.mcan_ass('s')
-        return {'h': h_mw, 'b': b_mw, 's': s_mw}
+        return {'FTTH': h_mw, 'FTTB': b_mw, 'FTTS': s_mw}
 
     def tot(s):
         mws = s.sum_mw()
@@ -93,11 +98,12 @@ class Model(object):
         """
         Create main Plot
         """
+        s.update_dependend_facs()
         x = np.arange(s.max_horizon)
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8,5))
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 5))
         tot_d = s.tot()
         ymin, ymax = 0, 0
-        for k,v in zip(tot_d.keys(), tot_d.values()):
+        for k, v in zip(tot_d.keys(), tot_d.values()):
             if v.min() < ymin:
                 ymin = v.min()
             if v.max() > ymax:

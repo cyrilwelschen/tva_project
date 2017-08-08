@@ -3,7 +3,6 @@
 
 from flask import Flask, request, render_template
 import pickle
-from tva_project.models.model_helpers import *
 from tva_project.models.model import Model
 
 
@@ -45,15 +44,23 @@ def dummy_db_put(req_form):
     return new_dic
 
 
+def blacklist():
+    return ['rez']
+
+
 def dummy_db_put_single(req_form):
     db_dic = dummy_db_get()
     new_dic = []
     for f in db_dic:
         f_name = f['name']
-        try:
-            f['value'] = float(eval(req_form[f_name+'f']))
-        except SyntaxError as err:
-            f['value'] = float(req_form[f_name+'f'])
+        if f_name not in blacklist():
+            try:
+                f['value'] = float(eval(req_form[f_name]))
+            except SyntaxError as err:
+                f['value'] = float(req_form[f_name])
+        else:
+            print("blacklist invoked")
+            f['value'] = req_form[f_name]
         new_dic.append(f)
     with open('dummy.txt', 'wb') as f:
         pickle.dump(new_dic, f)
@@ -82,15 +89,15 @@ def value_brain():
         sliders = dummy_db_put_single(request.form)
         Model(sliders).plot()
         cats = ["Input", "FTTH", "FTTSB", "FTTB", "FTTS"]
-        print(request.form)
-        s_dic = {'factors': sliders, 'cats': cats, 'rez': request.form['rez']}
+        # print(request.form)
+        s_dic = {'factors': sliders, 'cats': cats}
         return render_template('main_slim.html',
                                sliders=s_dic)
     else:
         sliders = initial_put()
         Model(sliders).plot()
         cats = ["Input", "FTTH", "FTTSB", "FTTB", "FTTS"]
-        s_dic = {'factors': sliders, 'cats': cats, 'rez': 'REZ'}
+        s_dic = {'factors': sliders, 'cats': cats}
         return render_template('main_slim.html',
                                sliders=s_dic)
 
@@ -98,6 +105,8 @@ def value_brain():
 def load_defaults():
     return list([{'name': 'max_horizon', 'cat': 'plot', 'value': 8*12},
                  {'name': 'slider', 'cat': 'plot', 'value': 12},
+                 # Input
+                 {'name': 'rez', 'cat': 'Input', 'value': "2342-234"},
                  {'name': 'anzahl_ne', 'cat': 'Input', 'value': 10},
                  # FTTH
                  {'name': 'fan_wartung', 'cat': 'FTTH Betrieb', 'value': 521.7,

@@ -10,7 +10,6 @@ function submitForm(){
 
 <div class="container-fluid">
   <form id="form_id" action="{{ url_for('value_brain') }}" method="post">
-    <input type="text" value="{{ sliders['rez'] }}" name="rez" onchange="submitForm(this.name)" size="8">
     <div class="row">
       <div class="col-md-6">
         {% for c in sliders['cats']%}
@@ -22,7 +21,7 @@ function submitForm(){
           <label title="{% if slider_dic['desc'] %}{{ slider_dic['desc'] }}{% endif %}"><b>{{ slider_dic['name'] }}</b></label>
         </div>
         <div class="col-md-6 col-sm-3">
-          <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)" size="8">
+          <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name'] }}" onchange="submitForm(this.name)" size="8">
         </div>
         {% endif %}
         {% endfor %}
@@ -39,7 +38,7 @@ function submitForm(){
             <label title="{% if slider_dic['desc'] %}{{ slider_dic['desc'] }}{% endif %}"><b>{{ slider_dic['name'] }}</b></label>
           </div>
           <div class="col-md-6 col-sm-3">
-            <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name']+'f' }}" onchange="submitForm(this.name)" size="8">
+            <input type="text" value="{{ slider_dic['value'] }}" name="{{ slider_dic['name'] }}" onchange="submitForm(this.name)" size="8">
             <span> = {{ slider_dic['value']//12 }} Jahre {{ slider_dic['value']%12 }} Monate</span>
           </div>
           {% endif %}
