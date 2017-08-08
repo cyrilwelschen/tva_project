@@ -21,7 +21,7 @@ Factors
 
 
 class Slider(object):
-    def __init__(self, s=12*2):
+    def __init__(self, s=12*5):
         self.s = s
 
     def set_v(self, new):
@@ -82,7 +82,6 @@ def search(rez):
         print("Found multiple rez fitting the description: {}\n\n \
               Taking first by default".format(re))
     else:
-        print("REE:", re[0])
         return re[0]
 
 
@@ -92,6 +91,9 @@ def rez_dic(rez):
     for k, v in zip(look_for(), re):
         rez_dic[k] = v
     return rez_dic
+
+
+rd = rez_dic(rez)
 
 
 def re_name(rez_dic):
@@ -167,9 +169,33 @@ def rn(t):
         return 'FTTC'
 
 
+def cap(t):
+    if t == 'h':
+        return rd['FTTHTotalproNE']
+    if t == 'b':
+        return rd['FTTSBTotalproNE']
+    if t == 's':
+        return rd['FTTSBTotalproNE']
+    if t == 'c':
+        return 0
+
+
+def rev(t):
+    n = 'PenetrationVerträgeRESWlineHSIanWETotal'
+    if t == 'h':
+        return 95.97 * rd[n]
+    if t == 'b':
+        return 94.38 * rd[n]
+    if t == 's':
+        return 94.38 * rd[n]
+    if t == 'c':
+        return 92.71 * rd[n]
+
+
 class LineBuilderAx1:
-    def __init__(self, line, ax):
+    def __init__(self, line, ax, tit="OPEX"):
         self.line = line
+        self.tit = tit
         self.ax = ax
         self.cid = line.figure.canvas.mpl_connect('button_press_event', self)
 
@@ -183,13 +209,13 @@ class LineBuilderAx1:
             t_temp = l[3].lower()
             new_lebs.append(p_label(rn(t_temp), y_temp[int(event.xdata)]))
         self.ax.legend(hans, new_lebs)
-        self.ax.set_title(p_tit(event.xdata))
+        self.ax.set_title(p_tit(event.xdata, self.tit))
         self.line.set_xdata(event.xdata)
         self.line.figure.canvas.draw()
 
 
-def p_tit(mts):
-    return "OPEX nach {} yr {} mt".format(int(mts // 12), int(mts % 12))
+def p_tit(mts, tit="OPEX"):
+    return "{} nach {} yr {} mt".format(tit, int(mts // 12), int(mts % 12))
 
 
 def p_label(n, chf):
@@ -206,13 +232,26 @@ def ax1_plot(ax1, sli, x):
     LineBuilderAx1(vl, ax1)
 
 
+def ax2_plot(ax, sli, x):
+    tit = "Ertrag"
+    for t in techs():
+        y = m2t(k2a(rev(t), 1)) - m_nb2i_ne(t, get_ne()) - cap(t)
+        ax.plot(x, y, label=p_label(rn(t), y[sli.v()]))
+    ax.set_title(p_tit(sli.v(), tit=tit))
+    ax.legend()
+    vl = ax.axvline(sli.v())
+    LineBuilderAx1(vl, ax, tit=tit)
+
+
 def plot_master(sli):
+    rez_d = rez_dic(rez)
     plt.close()
     fig, (ax12, ax34) = plt.subplots(2, 2, figsize=(6, 6))
     ax1, ax2 = ax12
-    fig.suptitle("Hello")
+    fig.suptitle(re_name(rez_d))
     x = np.arange(horizon())
     ax1_plot(ax1, sli, x)
+    ax2_plot(ax2, sli, x)
     plt.show()
     return 0
 
@@ -223,4 +262,3 @@ Main
 if __name__ == '__main__':
     print(search_query(db_file, "SELECT Rez from RezTable WHERE ID < 6"))
     plot_master(Slider())
-    print(rez_dic(rez))
