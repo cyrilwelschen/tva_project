@@ -272,25 +272,54 @@ def opp_cap_plot(anz_ne, capex_diff):
     return opp_erwartung/anz_ne
 
 
+def t2m(monatsweise):
+    monatsweise = np.array(monatsweise)
+    month = [0]
+    for i in np.arange(len(monatsweise)-1):
+        if i < len(monatsweise):
+            month.append(monatsweise[(i+1)] - monatsweise[i])
+    return np.array(month)
+
+
+def forma(h,s,t,i, p):
+    n = []
+    for i, vs, vh in zip(np.arange(len(s)), s, h):
+        if i < t:
+            n.append(vs)
+        elif i == t:
+            n.append(vs - i)
+        else:
+            n.append(vh*p + vs*(1-p))
+    return np.array(n)
+
+
 def ax4_plot(ax, x):
     from mpl_toolkits.mplot3d import axes3d
     le = len(x)
     X = np.array(le*list(x)).reshape(le, le)
     y = np.linspace(0,1,le)
     Y = np.array(le*list(y)).reshape(le, le).T
+    Zs = []
     tim = 4*12 # index when ngPON happens # sprung
     ink_cap = 600 + rd['FTTHTotalproNE']/2
-    #h_y = m2t(k2a(rev('h'), 1)) - m_nb2i_ne('h', get_ne()) - cap('h') - m2t(k2a(cap('h') * 0.01, 1))
-    #s_y = m2t(k2a(rev('s'), 1)) - m_nb2i_ne('s', get_ne()) - cap('s') - m2t(k2a(cap('s') * 0.01, 1))
-    Zs = []
-    for t in ['h', 's']:
+    h_y = m2t(k2a(rev('h'), 1)) - m_nb2i_ne('h', get_ne()) - cap('h') - m2t(k2a(cap('h') * 0.01, 1))
+    s_y = m2t(k2a(rev('s'), 1)) - m_nb2i_ne('s', get_ne()) - cap('s') - m2t(k2a(cap('s') * 0.01, 1))
+    h_ym = t2m(h_y)
+    s_ym = t2m(s_y)
+    z_data = []
+    for p in y:
+        z = np.array(m2t(forma(h_ym, s_ym, tim, ink_cap, p)))
+        z_data.append(z)
+    Z = np.array(list(z_data)).reshape(le, le)
+    Zs.append(Z)
+    for t in ['h']:
         z = m2t(k2a(rev(t), 1)) - m_nb2i_ne(t, get_ne()) - cap(t)- m2t(k2a(cap(t) * 0.01, 1))
         for i in x:
             z = m2t(k2a(rev(t), 1)) - m_nb2i_ne(t, get_ne()) - cap(t)- m2t(k2a(cap(t) * 0.01, 1))
             Z = np.array(le*list(z)).reshape(le, le)
         Zs.append(Z)
-    for big_z in Zs:
-        ax.plot_wireframe(X, Y, big_z, rstride=10, cstride=30)
+    for big_z, c in zip(Zs, ['orange', 'b']):
+        ax.plot_wireframe(X, Y, big_z, rstride=10, cstride=30, color=c)
 
 
 def plot_master(sli):
