@@ -275,15 +275,15 @@ def opp_cap_plot(anz_ne, capex_diff):
 def ax4_plot(ax, x):
     from mpl_toolkits.mplot3d import axes3d
     le = len(x)
-    X = np.array(le*list(x)).reshape(le, le).T
+    X = np.array(le*list(x)).reshape(le, le)
     y = np.linspace(0,1,le)
-    Y = np.array(le*list(y)).reshape(le, le)
+    Y = np.array(le*list(y)).reshape(le, le).T
     tim = 4*12 # index when ngPON happens # sprung
     ink_cap = 600 + rd['FTTHTotalproNE']/2
     #h_y = m2t(k2a(rev('h'), 1)) - m_nb2i_ne('h', get_ne()) - cap('h') - m2t(k2a(cap('h') * 0.01, 1))
     #s_y = m2t(k2a(rev('s'), 1)) - m_nb2i_ne('s', get_ne()) - cap('s') - m2t(k2a(cap('s') * 0.01, 1))
     Zs = []
-    for t in techs():
+    for t in ['h', 's']:
         z = m2t(k2a(rev(t), 1)) - m_nb2i_ne(t, get_ne()) - cap(t)- m2t(k2a(cap(t) * 0.01, 1))
         for i in x:
             z = m2t(k2a(rev(t), 1)) - m_nb2i_ne(t, get_ne()) - cap(t)- m2t(k2a(cap(t) * 0.01, 1))
