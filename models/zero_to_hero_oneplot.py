@@ -281,15 +281,15 @@ def t2m(monatsweise):
     return np.array(month)
 
 
-def forma(h,s,t,i, p):
+def forma(h,s,t,ink, p):
     n = []
     for i, vs, vh in zip(np.arange(len(s)), s, h):
         if i < t:
             n.append(vs)
         elif i == t:
-            n.append(vs - i)
+            n.append(vs - ink)
         else:
-            n.append(vh*p + vs*(1-p))
+            n.append(vh*(1-p)+ vs*p)
     return np.array(n)
 
 
@@ -300,8 +300,8 @@ def ax4_plot(ax, x):
     y = np.linspace(0,1,le)
     Y = np.array(le*list(y)).reshape(le, le).T
     Zs = []
-    tim = 4*12 # index when ngPON happens # sprung
-    ink_cap = 600 + rd['FTTHTotalproNE']/2
+    tim = 5*12 # index when ngPON happens # sprung
+    ink_cap = 1800 + rd['FTTHTotalproNE']
     h_y = m2t(k2a(rev('h'), 1)) - m_nb2i_ne('h', get_ne()) - cap('h') - m2t(k2a(cap('h') * 0.01, 1))
     s_y = m2t(k2a(rev('s'), 1)) - m_nb2i_ne('s', get_ne()) - cap('s') - m2t(k2a(cap('s') * 0.01, 1))
     h_ym = t2m(h_y)
@@ -318,8 +318,11 @@ def ax4_plot(ax, x):
             z = m2t(k2a(rev(t), 1)) - m_nb2i_ne(t, get_ne()) - cap(t)- m2t(k2a(cap(t) * 0.01, 1))
             Z = np.array(le*list(z)).reshape(le, le)
         Zs.append(Z)
+    fig2 = plt.figure()
+    af = fig2.add_subplot(111, projection='3d')
     for big_z, c in zip(Zs, ['orange', 'b']):
-        ax.plot_wireframe(X, Y, big_z, rstride=10, cstride=30, color=c)
+        ax.plot_wireframe(X, Y, big_z, rstride=50, cstride=50, color=c)
+        af.plot_wireframe(X, Y, big_z, rstride=20, cstride=50, color=c)
 
 
 def plot_master(sli):
